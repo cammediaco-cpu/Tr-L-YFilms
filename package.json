@@ -3,11 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "NODE_ENV=development node index.js",
-    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node server.js",
+    "start": "NODE_ENV=production node server.js",
     "build": "vite build",
+    "postinstall": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
   },
