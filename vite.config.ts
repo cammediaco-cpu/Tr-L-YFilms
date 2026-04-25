@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react(), tailwindcss()],
       build: {
-        chunkSizeWarningLimit: 2000,
+        chunkSizeWarningLimit: 5000,
       },
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
