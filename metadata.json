@@ -1,0 +1,5 @@
+{
+  "name": "Remix: Trợ Lý YFilms",
+  "description": "Chuyên tạo khung hình First Frame và Last Frame cho quy trình AI Video, tạo ảnh, tạo video. sử dụng Model từ API BytePlus",
+  "requestFramePermissions": []
+}

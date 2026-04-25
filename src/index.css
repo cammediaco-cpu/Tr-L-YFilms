@@ -1,0 +1,89 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+body {
+  background-color: #0a0a0a;
+  color: #e5e5e5;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #121212; 
+}
+::-webkit-scrollbar-thumb {
+  background: #333; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444; 
+}
+
+/* Markdown Table Styles */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.prose thead {
+  background-color: #27272a; /* zinc-800 */
+}
+
+.prose thead th {
+  padding: 0.75rem 1rem;
+  border: 1px solid #3f3f46; /* zinc-700 */
+  text-align: left;
+  font-weight: 600;
+  color: #f4f4f5; /* zinc-100 */
+}
+
+.prose tbody td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #3f3f46; /* zinc-700 */
+  color: #d4d4d8; /* zinc-300 */
+}
+
+.prose tbody tr {
+  background-color: #18181b; /* zinc-900 */
+}
+
+.prose tbody tr:nth-child(even) {
+  background-color: #27272a; /* zinc-800 */
+}
+
+.prose tbody tr:hover {
+  background-color: #3f3f46; /* zinc-700 */
+}
+
+.prose a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.prose a:hover {
+  text-decoration: underline;
+}
+
+/* Blockquote Styles */
+.prose blockquote {
+  border-left: 4px solid #e11d48; /* cinema-accent */
+  background-color: rgba(225, 29, 72, 0.1);
+  padding: 0.5rem 1rem;
+  margin: 1.5rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #e5e5e5;
+  font-style: normal;
+}
+
+.prose blockquote p {
+  margin: 0;
+}
