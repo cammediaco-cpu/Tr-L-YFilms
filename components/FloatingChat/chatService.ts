@@ -106,6 +106,7 @@ export const streamChat = async (
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'text/event-stream',
             'Authorization': `Bearer ${creds.apiKey}`
         },
         body: JSON.stringify(payload),
@@ -124,17 +125,22 @@ export const streamChat = async (
     let done = false;
     let reasoningStarted = false;
     let reasoningEnded = false;
+    let buffer = "";
 
     while (!done) {
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
         if (value) {
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n').filter(line => line.trim() !== '');
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            // Giữ lại phần chưa hoàn chỉnh (dòng cuối cùng sau \n) trong buffer
+            buffer = lines.pop() || "";
+
             for (const line of lines) {
-                if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                const trimmedLine = line.trim();
+                if (trimmedLine.startsWith('data: ') && trimmedLine !== 'data: [DONE]') {
                     try {
-                        const data = JSON.parse(line.slice(6));
+                        const data = JSON.parse(trimmedLine.slice(6));
                         if (data.choices && data.choices[0].delta) {
                             const delta = data.choices[0].delta;
                             
@@ -155,7 +161,7 @@ export const streamChat = async (
                             }
                         }
                     } catch (e) {
-                        console.warn("Lỗi parse JSON stream:", e, line);
+                        console.warn("Lỗi parse JSON stream:", e, trimmedLine);
                     }
                 }
             }

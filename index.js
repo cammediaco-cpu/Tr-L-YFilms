@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import axios from "axios";
-import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -28,7 +27,7 @@ async function startServer() {
   // Proxy endpoint for images to bypass CORS
   app.get("/api/proxy-image", async (req, res) => {
     try {
-      const imageUrl = req.query.url as string;
+      const imageUrl = req.query.url;
       if (!imageUrl) {
         return res.status(400).json({ error: "Missing url parameter" });
       }
@@ -40,7 +39,7 @@ async function startServer() {
           'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.9',
         },
-        validateStatus: (status) => status < 500 // Resolve only if the status code is less than 500
+        validateStatus: (status) => status < 500
       });
       
       if (response.status !== 200) {
@@ -60,7 +59,7 @@ async function startServer() {
       res.set('Content-Type', contentType || 'image/jpeg');
       res.set('Cache-Control', 'public, max-age=31536000');
       res.send(buffer);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Proxy image error:", error.message || error);
       res.status(500).json({ error: "Failed to fetch image", details: error.message });
     }
@@ -68,15 +67,20 @@ async function startServer() {
 
   // Vite middleware for development
   if (process.env.NODE_ENV === "development") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
+    try {
+        const { createServer: createViteServer } = await import("vite");
+        const vite = await createViteServer({
+          server: { middlewareMode: true },
+          appType: "spa",
+        });
+        app.use(vite.middlewares);
+    } catch (err) {
+        console.error("Failed to load vite", err);
+    }
   } else {
     // Serve static files in production
     app.use(express.static(path.join(__dirname, "dist")));
-    app.get("*all", (req, res) => {
+    app.get("*", (req, res) => {
       res.sendFile(path.join(__dirname, "dist", "index.html"));
     });
   }

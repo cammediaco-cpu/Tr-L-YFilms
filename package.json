@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development tsx server.ts",
-    "start": "node server.js",
-    "build": "vite build && npm run build:server",
-    "build:server": "esbuild server.ts --platform=node --format=esm --outfile=server.js --packages=external --bundle",
+    "dev": "NODE_ENV=development node index.js",
+    "start": "NODE_ENV=production node index.js",
+    "build": "vite build",
+    "preview": "vite preview",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
