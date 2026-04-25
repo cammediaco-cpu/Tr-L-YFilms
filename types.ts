@@ -54,7 +54,8 @@ export enum AppMode {
   DIRECTOR = "director",   // Old functionality
   CREATIVE = "creative",    // New functionality
   VIDEO = "video",          // Video generation
-  TTS = "tts"              // Text to Speech
+  TTS = "tts",              // Text to Speech
+  CHAT = "chat"             // Support for AI Chat Page
 }
 
 export enum AssetType {

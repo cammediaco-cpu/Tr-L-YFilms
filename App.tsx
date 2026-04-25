@@ -3,12 +3,13 @@ import { AspectRatio, Resolution, GenerationMode, GeneratedAsset, ApiCredentials
 import { ASPECT_RATIOS, IMAGE_RESOLUTIONS, IMAGE_MODELS, MODEL_IMAGE_BASE, VIDEO_MODELS } from './constants';
 import { fileToDataUrl, urlToFile, createThumbnail } from './services/apiClient';
 import { enhancePromptWithMotion } from './services/directorService';
-import { Upload, Wand2, Image as ImageIcon, Loader2, Rewind, FastForward, Download, Settings, Trash2, Plus, XCircle, Minimize2, Move, Video, Zap, FileText, RefreshCw, Copy, Clapperboard, User, Mountain, Palette, Shirt, Sparkles, Play, Mic, Filter } from 'lucide-react';
+import { Upload, Wand2, Image as ImageIcon, Loader2, Rewind, FastForward, Download, Settings, Trash2, Plus, XCircle, Minimize2, Move, Video, Zap, FileText, RefreshCw, Copy, Clapperboard, User, Mountain, Palette, Shirt, Sparkles, Play, Mic, Filter, MessageCircle } from 'lucide-react';
 import ApiKeyModal from './components/ApiKeyModal';
 import ImageViewer from './components/ImageViewer';
 import CreativeMode from './components/CreativeMode';
 import VideoMode from './components/VideoMode';
 import TTSMode from './components/TTSMode';
+import ChatMode from './components/ChatMode';
 import FloatingChat from './components/FloatingChat/FloatingChat';
 
 const getModelLabel = (modelValue: string | undefined) => {
@@ -428,15 +429,21 @@ export default function App() {
   const handlePrev = () => { if (selectedIndex > 0) setSelectedImageId(results[selectedIndex - 1].id); };
 
   return (
-    <div className="min-h-screen bg-cinema-black text-zinc-100 font-sans selection:bg-cinema-accent selection:text-white pb-20">
+    <div className={`bg-cinema-black text-zinc-100 font-sans selection:bg-cinema-accent selection:text-white ${appMode === AppMode.CHAT ? 'h-[100dvh] overflow-hidden' : 'min-h-screen pb-20'}`}>
       {showLogin && <ApiKeyModal onCredentialsSubmit={handleCredentials} />}
       
-      {/* Header */}
-      <header className="border-b border-zinc-800 bg-cinema-dark/50 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-[1600px] mx-auto px-6 py-3 grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-8">
-          
-          {/* Left: Logo */}
-          <div className="flex items-center gap-3 shrink-0">
+      {appMode === AppMode.CHAT ? (
+        <div className="h-full w-full relative">
+            <ChatMode credentials={credentials} onClose={() => setAppMode(AppMode.DIRECTOR)} />
+        </div>
+      ) : (
+        <>
+          {/* Header */}
+          <header className="border-b border-zinc-800 bg-cinema-dark/50 backdrop-blur-md sticky top-0 z-40">
+            <div className="max-w-[1600px] mx-auto px-6 py-3 grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-8">
+              
+              {/* Left: Logo */}
+              <div className="flex items-center gap-3 shrink-0">
             {/* Logo Image with Error Fallback */}
             {logoError ? (
                 <div className="w-10 h-10 rounded-lg bg-rose-600 flex items-center justify-center shadow-lg shadow-rose-900/20">
@@ -482,6 +489,12 @@ export default function App() {
                     className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 text-xs sm:text-sm transition-all ${appMode === AppMode.TTS ? 'bg-zinc-800 text-white shadow-sm ring-1 ring-zinc-700' : 'text-zinc-500 hover:text-white'}`}
                 >
                     <Mic size={16} /> <span className="hidden md:inline">Text to Speech</span><span className="md:hidden">TTS</span>
+                </button>
+                <button 
+                    onClick={() => setAppMode(AppMode.CHAT)}
+                    className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 text-xs sm:text-sm transition-all ${appMode === AppMode.CHAT ? 'bg-zinc-800 text-white shadow-sm ring-1 ring-zinc-700' : 'text-zinc-500 hover:text-white'}`}
+                >
+                    <MessageCircle size={16} /> <span className="hidden md:inline">Chat AI</span><span className="md:hidden">Chat</span>
                 </button>
             </div>
           </div>
@@ -893,6 +906,8 @@ export default function App() {
         </div>
 
       </main>
+      </>
+      )}
 
       {selectedImage && (
         <ImageViewer 
@@ -905,7 +920,7 @@ export default function App() {
         />
       )}
 
-      <FloatingChat credentials={credentials} />
+      {appMode !== AppMode.CHAT && <FloatingChat credentials={credentials} />}
     </div>
   );
 }

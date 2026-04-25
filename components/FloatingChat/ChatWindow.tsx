@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage, ChatSettings, ChatProfile, ChatSession } from './chatTypes';
-import { Send, Image as ImageIcon, X, Loader2, Bot, User, Trash2, Settings, MessageSquarePlus, StopCircle, BrainCircuit, Menu, ChevronLeft, Globe, Copy, Check, ChevronDown } from 'lucide-react';
+import { Send, Image as ImageIcon, X, Loader2, Bot, User, Trash2, Settings, MessageSquarePlus, StopCircle, BrainCircuit, Menu, ChevronLeft, Globe, Copy, Check, ChevronDown, ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -160,12 +160,14 @@ interface ChatWindowProps {
     activeSessionId: string | null;
     onSwitchSession: (id: string) => void;
     onDeleteSession: (id: string) => void;
+    hideHeaderOnDesktop?: boolean;
+    onClose?: () => void;
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({
     messages, onSendMessage, onStop, onClear, onNewChat, isStreaming,
     settings, onSettingsChange, profiles, activeProfileId, onProfileChange, onOpenProfileManager,
-    sessions, activeSessionId, onSwitchSession, onDeleteSession
+    sessions, activeSessionId, onSwitchSession, onDeleteSession, hideHeaderOnDesktop = false, onClose
 }) => {
     const [input, setInput] = useState('');
     const [images, setImages] = useState<string[]>([]);
@@ -271,45 +273,51 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
              onDrop={handleDrop}
         >
             {/* Header */}
-            <div className="bg-zinc-800/80 backdrop-blur-md border-b border-zinc-700 p-3 flex items-center justify-between z-10">
-                <div className="flex items-center gap-2">
-                    <button onClick={() => setShowSidebar(!showSidebar)} className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors mr-1">
-                        <Menu size={18} />
-                    </button>
-                    <div className="relative group cursor-pointer" onClick={() => setShowSettings(!showSettings)}>
-                        <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-lg shadow-inner overflow-hidden shrink-0">
-                            {activeProfile?.icon?.startsWith('data:image') ? (
-                                <img src={activeProfile.icon} alt="icon" className="w-full h-full object-cover" />
-                            ) : (
-                                activeProfile?.icon || '🤖'
-                            )}
-                        </div>
-                        <div className="absolute top-10 left-0 bg-zinc-800 border border-zinc-700 rounded-lg p-2 shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
-                            <p className="text-xs text-white font-bold">{activeProfile?.name}</p>
-                            <p className="text-[10px] text-zinc-400">Nhấp để đổi Profile/Model</p>
-                        </div>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-sm font-bold text-white leading-tight">{activeProfile?.name || 'Trợ Lý'}</span>
-                        <span className="text-[10px] text-zinc-400 flex items-center gap-1">
-                            {settings.model} {settings.reasoningEnabled && <BrainCircuit size={10} className="text-cinema-accent"/>}
-                        </span>
-                    </div>
-                </div>
-                
-                <div className="flex items-center gap-1">
-                    <button onClick={onNewChat} className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors" title="Đoạn chat mới">
-                        <MessageSquarePlus size={16} />
-                    </button>
-                    <button onClick={onClear} className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded-lg transition-colors" title="Xóa đoạn chat">
-                        <Trash2 size={16} />
-                    </button>
-                </div>
-            </div>
+            <div className={`bg-zinc-800/80 backdrop-blur-md border-b border-zinc-700 p-3 flex items-center justify-between z-10 ${hideHeaderOnDesktop ? 'md:hidden' : ''}`}>
+                  <div className="flex items-center gap-2">
+                      {onClose && (
+                          <button onClick={onClose} className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors mr-1 md:hidden" title="Quay lại">
+                              <ArrowLeft size={18} />
+                          </button>
+                      )}
+                      <button onClick={() => setShowSidebar(!showSidebar)} className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors mr-1">
+                          <Menu size={18} />
+                      </button>
+                      <div className="relative group cursor-pointer" onClick={() => setShowSettings(!showSettings)}>
+                          <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-lg shadow-inner overflow-hidden shrink-0">
+                              {activeProfile?.icon?.startsWith('data:image') ? (
+                                  <img src={activeProfile.icon} alt="icon" className="w-full h-full object-cover" />
+                              ) : (
+                                  activeProfile?.icon || '🤖'
+                              )}
+                          </div>
+                          <div className="absolute top-10 left-0 bg-zinc-800 border border-zinc-700 rounded-lg p-2 shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+                              <p className="text-xs text-white font-bold">{activeProfile?.name}</p>
+                              <p className="text-[10px] text-zinc-400">Nhấp để đổi Profile/Model</p>
+                          </div>
+                      </div>
+                      <div className="flex flex-col">
+                          <span className="text-sm font-bold text-white leading-tight">{activeProfile?.name || 'Trợ Lý'}</span>
+                          <span className="text-[10px] text-zinc-400 flex items-center gap-1">
+                              {settings.model} {settings.reasoningEnabled && <BrainCircuit size={10} className="text-cinema-accent"/>}
+                          </span>
+                      </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                      <button onClick={onNewChat} className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors" title="Đoạn chat mới">
+                          <MessageSquarePlus size={16} />
+                      </button>
+                      <button onClick={onClear} className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded-lg transition-colors" title="Xóa đoạn chat">
+                          <Trash2 size={16} />
+                      </button>
+                  </div>
+              </div>
+            
 
             {/* Sidebar (Chat List) */}
             {showSidebar && (
-                <div className="absolute inset-0 bg-zinc-900 z-40 flex flex-col animate-in slide-in-from-left-4">
+                <div className={`absolute inset-0 bg-zinc-900 z-40 flex flex-col animate-in slide-in-from-left-4 ${hideHeaderOnDesktop ? 'md:hidden' : ''}`}>
                     <div className="bg-zinc-800/80 backdrop-blur-md border-b border-zinc-700 p-3 flex items-center justify-between">
                         <span className="text-sm font-bold text-white">Lịch sử Chat</span>
                         <button onClick={() => setShowSidebar(false)} className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">
@@ -359,7 +367,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
             {/* Settings Dropdown */}
             {showSettings && (
-                <div className="absolute top-14 left-2 right-2 bg-zinc-800 border border-zinc-700 rounded-xl p-3 shadow-2xl z-20 space-y-3 animate-in fade-in slide-in-from-top-2">
+                <div className={`absolute top-14 left-2 right-2 bg-zinc-800 border border-zinc-700 rounded-xl p-3 shadow-2xl z-20 space-y-3 animate-in fade-in slide-in-from-top-2 ${hideHeaderOnDesktop ? 'md:hidden' : ''}`}>
                     <div>
                         <label className="text-xs text-zinc-400 block mb-1">Chọn Model</label>
                         <select 
