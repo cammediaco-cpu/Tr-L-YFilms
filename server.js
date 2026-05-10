@@ -85,7 +85,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     console.log("====================================================");
     console.log(`🚀 SERVER ĐANG CHẠY TẠI PORT: ${PORT}`);
     console.log(`📂 MÔI TRƯỜNG: ${process.env.NODE_ENV || 'development'}`);
